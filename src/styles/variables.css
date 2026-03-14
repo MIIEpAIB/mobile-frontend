@@ -1,0 +1,70 @@
+/* ============================================
+   鲲鹏易道 - 玄学中国红设计系统
+   ============================================ */
+
+:root {
+  /* ─── 主色调：中国红 ─── */
+  --color-primary: #C41E24;
+  --color-primary-dark: #8B1A1A;
+  --color-primary-light: #D4443E;
+  --color-primary-soft: rgba(196, 30, 36, 0.1);
+
+  /* ─── 辅色：金色 ─── */
+  --color-gold: #D4A017;
+  --color-gold-light: #C8A85C;
+  --color-gold-dark: #A67C00;
+  --color-gold-soft: rgba(212, 160, 23, 0.15);
+
+  /* ─── 背景色 ─── */
+  --bg-primary: #FDF5EC;
+  --bg-secondary: #F5EDE0;
+  --bg-card: #FFFFFF;
+  --bg-dark: #1A0A0A;
+  --bg-overlay: rgba(26, 10, 10, 0.6);
+
+  /* ─── 文字色 ─── */
+  --text-primary: #2C1810;
+  --text-secondary: #6B5B4E;
+  --text-tertiary: #9E8E82;
+  --text-inverse: #FDF5EC;
+  --text-gold: #D4A017;
+
+  /* ─── 边框色 ─── */
+  --border-light: rgba(196, 30, 36, 0.12);
+  --border-gold: rgba(212, 160, 23, 0.3);
+  --border-default: #E8D8C8;
+
+  /* ─── 功能色 ─── */
+  --color-success: #52C41A;
+  --color-warning: #FAAD14;
+  --color-danger: #FF4D4F;
+  --color-info: #1890FF;
+
+  /* ─── 阴影 ─── */
+  --shadow-sm: 0 2px 8px rgba(139, 26, 26, 0.06);
+  --shadow-md: 0 4px 16px rgba(139, 26, 26, 0.1);
+  --shadow-lg: 0 8px 32px rgba(139, 26, 26, 0.15);
+  --shadow-gold: 0 4px 16px rgba(212, 160, 23, 0.2);
+
+  /* ─── 圆角 ─── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 999px;
+
+  /* ─── 字体 ─── */
+  --font-serif: 'Noto Serif SC', serif;
+  --font-sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ─── 间距 ─── */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+
+  /* ─── 底部安全区 ─── */
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tabbar-height: 56px;
+}
