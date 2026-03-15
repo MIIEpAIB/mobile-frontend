@@ -63,7 +63,14 @@ const drawLottery = async () => {
   loading.value = true
   try {
     const res = await lotteryDraw({ purpose_code: form.value.purpose, question: form.value.question })
-    result.value = res.data
+    const d = res.data
+    // 后端 DeepSeek 返回: lottery_id, lottery_no, lottery_level, lottery_poetry, lottery_explain
+    result.value = {
+      sign_title: d.lottery_level || d.sign_title,
+      sign_content: d.lottery_poetry || d.sign_content,
+      interpretation: d.lottery_explain || d.interpretation,
+      ...d
+    }
   } catch (e) {
     result.value = { sign_title: '第七签 · 上吉', sign_content: '莫听穿林打叶声，何妨吟啸且徐行', interpretation: '此签主事顺遂，宜静待时机。目前虽有波折，但终将柳暗花明。' }
   } finally { loading.value = false }

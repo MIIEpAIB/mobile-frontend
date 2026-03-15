@@ -26,8 +26,20 @@ const levelClass = computed(() => { const l = result.value?.auspicious_level||''
 const submit = async () => {
   if (form.value.phone_number.length !== 11) return alert('请输入11位手机号')
   loading.value = true
-  try { const r = await aiPhone(form.value); result.value = r.data } catch { result.value = { phone_number: form.value.phone_number, auspicious_level: '大吉', number_analysis: '此号码数理为吉祥组合，中间四位暗含财运密码，尾号组合利于人际关系与事业发展。', five_elements: '五行属火土，利于南方发展', suggestion: '此号码整体大吉，适合长期使用。建议配合东南方位使用手机，增强号码能量。' } }
-  finally { loading.value = false }
+  try {
+  const r = await aiPhone(form.value)
+  const d = r.data
+  // 后端 DeepSeek 返回 analysis 全文
+  result.value = {
+    phone_number: form.value.phone_number,
+    auspicious_level: d.auspicious_level || '吉凶见分析',
+    number_analysis: d.analysis || d.number_analysis || '',
+    five_elements: d.five_elements || '',
+    suggestion: d.suggestion || d.analysis || ''
+  }
+} catch {
+  result.value = { phone_number: form.value.phone_number, auspicious_level: '大吉', number_analysis: '此号码数理为吉祥组合，中间四位暗含财运密码，尾号组合利于人际关系与事业发展。', five_elements: '五行属火土，利于南方发展', suggestion: '此号码整体大吉，适合长期使用。建议配合东南方位使用手机，增强号码能量。' }
+} finally { loading.value = false }
 }
 </script>
 <style scoped>

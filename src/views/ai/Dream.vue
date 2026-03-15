@@ -25,7 +25,18 @@ const form = ref({ dream_content: '', dream_emotion: '' })
 const submit = async () => {
   if (!form.value.dream_content) return alert('请描述梦境')
   loading.value = true
-  try { const r = await aiDream(form.value); result.value = r.data } catch { result.value = { dream_symbol: '飞翔象征内心对自由与突破的渴望', interpretation: '梦见飞翔通常代表近期将迎来好运，事业上会有新的突破和机遇。', suggestion: '把握机会，勇敢追求目标，近期适合开展新计划。' } }
+  try {
+  const r = await aiDream({ dream_content: form.value.dream_content, dream_keyword: form.value.dream_emotion })
+  const d = r.data
+  // 后端 DeepSeek 返回 interpretation 全文
+  result.value = {
+    dream_symbol: d.dream_symbol || (d.interpretation ? d.interpretation.slice(0, 80) + (d.interpretation.length > 80 ? '…' : '') : ''),
+    interpretation: d.interpretation || '',
+    suggestion: d.suggestion || d.interpretation || ''
+  }
+} catch {
+  result.value = { dream_symbol: '飞翔象征内心对自由与突破的渴望', interpretation: '梦见飞翔通常代表近期将迎来好运，事业上会有新的突破和机遇。', suggestion: '把握机会，勇敢追求目标，近期适合开展新计划。' }
+}
   finally { loading.value = false }
 }
 </script>

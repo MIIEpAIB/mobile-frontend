@@ -14,7 +14,7 @@
     <div class="result card fade-in-up" v-else>
       <div class="result-char">{{ result.character || form.character }}</div>
       <div class="result-purpose tag tag-gold">{{ result.purpose_name || '问财运' }}</div>
-      <div class="interp" v-html="formatContent(result.interpretation_content)"></div>
+      <div class="interp" v-html="formatContent(result.analysis || result.interpretation_content)"></div>
       <button class="btn-outline" @click="result=null" style="margin-top:16px">重新测字</button>
     </div>
   </div>
@@ -30,7 +30,7 @@ onMounted(async () => { try { const r = await getDivinationPurposes(); if(r.data
 const submit = async () => {
   if (!form.value.character) return alert('请输入一个汉字')
   loading.value = true
-  try { const r = await characterCalculate({target_character:form.value.character,purpose_code:form.value.purpose}); result.value = r.data } catch { result.value = { character:form.value.character, purpose_name:'问财运', interpretation_content:'此字蕴含深意，上部结构代表天时，下部结构代表地利。综合来看，您所问之事整体运势向好，宜把握时机，稳步前行。' } }
+  try { const r = await characterCalculate({ character: form.value.character, purpose_code: form.value.purpose }); result.value = r.data } catch { result.value = { character: form.value.character, purpose_name: '问财运', interpretation_content: '此字蕴含深意，上部结构代表天时，下部结构代表地利。综合来看，您所问之事整体运势向好，宜把握时机，稳步前行。' } }
   finally { loading.value = false }
 }
 const formatContent = (t) => (t||'').replace(/\n/g, '<br/>')

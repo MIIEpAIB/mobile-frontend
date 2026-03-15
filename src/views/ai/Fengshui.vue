@@ -27,10 +27,16 @@ import { aiFengshui } from '@/api/modules/ai'
 const loading = ref(false), result = ref(null)
 const form = ref({ house_type: 'apartment', address: '', question: '' })
 const submit = async () => {
-  if (!form.value.question) return alert('请填写问题')
+  if (!form.value.address && !form.value.question) return alert('请填写地址或问题')
   loading.value = true
-  try { const r = await aiFengshui(form.value); result.value = r.data } catch { result.value = { overall_analysis: '整体风水格局良好，坐北朝南，采光充足。建议客厅摆放绿植以增旺财运。', key_positions: [{ position: '客厅', analysis: '客厅位于财位，采光好', suggestion: '摆放发财树，增添生气' }, { position: '卧室', analysis: '卧室偏西，气场平稳', suggestion: '床头朝东放置，有助休息' }] } }
-  finally { loading.value = false }
+  try {
+    const r = await aiFengshui({ address: form.value.address, direction: form.value.question || '' })
+    const d = r.data
+    // 后端 DeepSeek 返回 analysis 全文
+    result.value = { overall_analysis: d.analysis || d.overall_analysis || '', key_positions: d.key_positions || [] }
+  } catch {
+    result.value = { overall_analysis: '整体风水格局良好，坐北朝南，采光充足。建议客厅摆放绿植以增旺财运。', key_positions: [{ position: '客厅', analysis: '客厅位于财位，采光好', suggestion: '摆放发财树，增添生气' }, { position: '卧室', analysis: '卧室偏西，气场平稳', suggestion: '床头朝东放置，有助休息' }] }
+  } finally { loading.value = false }
 }
 </script>
 <style scoped>

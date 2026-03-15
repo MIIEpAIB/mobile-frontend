@@ -16,9 +16,10 @@
     <div class="result card fade-in-up" v-else>
       <h3 class="res-title">推荐名字</h3>
       <div class="name-card" v-for="n in result.recommended_names" :key="n.name">
-        <div class="name-header"><span class="name-text">{{ n.name }}</span><span class="name-score">{{ n.score }}分</span></div>
-        <p>{{ n.meaning }}</p><p class="five-el">{{ n.five_elements }}</p>
+        <div class="name-header"><span class="name-text">{{ n.name }}</span><span class="name-score" v-if="n.score">{{ n.score }}分</span></div>
+        <p v-if="n.meaning">{{ n.meaning }}</p><p class="five-el" v-if="n.five_elements">{{ n.five_elements }}</p>
       </div>
+      <p v-if="result.analysis && !result.recommended_names?.length" class="res-analysis">{{ result.analysis }}</p>
       <button class="btn-outline" @click="result=null" style="margin-top:16px">重新起名</button>
     </div>
   </div>
@@ -32,8 +33,15 @@ const form = ref({ surname: '', gender: 'male', birth_date: '', naming_type: 'ne
 const submit = async () => {
   if (!form.value.surname) return alert('请输入姓氏')
   loading.value = true
-  try { const r = await aiNaming(form.value); result.value = r.data } catch { result.value = { recommended_names: [{ name: form.value.surname+'浩然', meaning:'浩然正气，胸怀天下', five_elements:'金水相生，利于发展', score:96 },{ name: form.value.surname+'子墨', meaning:'文雅博学，才华横溢', five_elements:'水木相生，学业有成', score:93 },{ name: form.value.surname+'思远', meaning:'志向远大，深谋远虑', five_elements:'火土相生，事业顺遂', score:91 }] } }
-  finally { loading.value = false }
+  try {
+  const r = await aiNaming({ surname: form.value.surname, gender: form.value.gender })
+  const d = r.data
+  // 后端 DeepSeek 返回 names[] 与 analysis
+  const list = Array.isArray(d.names) && d.names.length ? d.names.map(name => ({ name, meaning: d.analysis || '', five_elements: '', score: 0 })) : (d.recommended_names || [])
+  result.value = { recommended_names: list, analysis: d.analysis }
+} catch {
+  result.value = { recommended_names: [{ name: form.value.surname + '浩然', meaning: '浩然正气，胸怀天下', five_elements: '金水相生，利于发展', score: 96 }, { name: form.value.surname + '子墨', meaning: '文雅博学，才华横溢', five_elements: '水木相生，学业有成', score: 93 }, { name: form.value.surname + '思远', meaning: '志向远大，深谋远虑', five_elements: '火土相生，事业顺遂', score: 91 }] }
+} finally { loading.value = false }
 }
 </script>
 <style scoped>
@@ -51,4 +59,5 @@ const submit = async () => {
 .name-score { font-size:16px; font-weight:700; color:var(--color-gold); }
 .name-card p { font-size:13px; color:var(--text-secondary); line-height:1.6; }
 .five-el { color:var(--color-gold-dark); margin-top:4px; }
+.res-analysis { font-size:14px; color:var(--text-secondary); line-height:1.8; margin-top:12px; }
 </style>
