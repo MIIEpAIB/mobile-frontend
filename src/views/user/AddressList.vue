@@ -23,11 +23,40 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import NavBar from '@/components/NavBar.vue'
-import { getAddressList } from '@/api/modules/user'
+import { getAddressList, addAddress } from '@/api/modules/user'
 const addresses = ref([]), showForm = ref(false)
 const form = ref({ name:'', phone:'', province:'', city:'', detail:'' })
-onMounted(async () => { try { const r = await getAddressList(); addresses.value = r.data?.list||r.data||[] } catch { addresses.value = [{ id:1, name:'张三', phone:'138****8000', province:'北京市', city:'朝阳区', district:'', detail:'XX路XX号', is_default:true }] } })
-const saveAddr = () => { addresses.value.push({ ...form.value, id: Date.now() }); showForm.value = false }
+const load = async () => {
+  try {
+    const r = await getAddressList()
+    addresses.value = r.data?.list || r.data || []
+  } catch {
+    addresses.value = [{ id:1, name:'张三', phone:'138****8000', province:'北京市', city:'朝阳区', district:'', detail:'XX路XX号', is_default:true }]
+  }
+}
+onMounted(load)
+const saveAddr = async () => {
+  if (!form.value.name?.trim() || !form.value.phone?.trim() || !form.value.detail?.trim()) {
+    alert('请填写收货人、手机号与详细地址')
+    return
+  }
+  try {
+    await addAddress({
+      receiver_name: form.value.name.trim(),
+      receiver_phone: form.value.phone.trim(),
+      province: form.value.province || '',
+      city: form.value.city || '',
+      district: '',
+      detail_address: form.value.detail.trim(),
+      is_default: addresses.value.length === 0,
+    })
+    await load()
+    showForm.value = false
+    form.value = { name: '', phone: '', province: '', city: '', detail: '' }
+  } catch (e) {
+    alert(e?.message || '保存失败')
+  }
+}
 </script>
 <style scoped>
 .addr-list { padding:12px 16px; }

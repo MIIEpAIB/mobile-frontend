@@ -14,3 +14,6 @@ export const addToCart = (data) => request.post('/mall/cart/add', data)
 
 // 立即购买创建订单
 export const createOrder = (data) => request.post('/mall/order/create', data)
+
+// 订单支付
+export const payOrder = (data) => request.post('/mall/order/pay', data)
