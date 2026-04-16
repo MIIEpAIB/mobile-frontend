@@ -29,7 +29,23 @@ onMounted(async () => {
 })
 const totalPrice = computed(() => items.value.filter(i=>i.selected).reduce((s,i) => s+i.price*i.quantity, 0))
 const selectedCount = computed(() => items.value.filter(i=>i.selected).length)
-const checkout = () => router.push('/mall/order-confirm')
+const checkout = () => {
+  const sel = items.value.filter((i) => i.selected)
+  if (!sel.length) return
+  const payload = sel.map((i) => ({
+    product_id: String(i.product_id),
+    product_name: i.product_name,
+    price: Number(i.price || 0),
+    quantity: Number(i.quantity || 1),
+    icon: i.icon || '',
+  }))
+  try {
+    sessionStorage.setItem('mall_checkout_items', JSON.stringify(payload))
+  } catch {
+    // ignore
+  }
+  router.push('/mall/order-confirm')
+}
 </script>
 <style scoped>
 .cart-list { padding:12px 0; }
