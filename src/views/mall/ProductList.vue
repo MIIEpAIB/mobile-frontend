@@ -6,7 +6,10 @@
     </div>
     <div class="product-grid">
       <div class="product-card card" v-for="p in products" :key="p.product_id" @click="$router.push('/mall/detail?product_id='+p.product_id)">
-        <div class="product-img">{{ p.icon || '🪷' }}</div>
+        <div class="product-img">
+          <img v-if="resolveProductImage(p)" :src="resolveProductImage(p)" alt="商品图片" class="product-photo" />
+          <span v-else>{{ p.icon || '🪷' }}</span>
+        </div>
         <div class="product-info">
           <h3>{{ p.product_name || p.name }}</h3>
           <p class="product-desc">{{ p.description || '开光法器' }}</p>
@@ -26,6 +29,20 @@ import { ref, onMounted } from 'vue'
 import { getProductList } from '@/api/modules/mall'
 const loading = ref(false), products = ref([]), activeCategory = ref('全部')
 const categories = ['全部','护身符','手串','摆件','开光法器','挂件']
+const apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+
+const normalizeImageUrl = (raw) => {
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.startsWith('/')) return `${apiBase}${raw}`
+  return `${apiBase}/${raw}`
+}
+
+const resolveProductImage = (product) => {
+  const p = product || {}
+  const firstFromList = Array.isArray(p.product_images) ? p.product_images.find((it) => !!it) : ''
+  return normalizeImageUrl(firstFromList || p.product_image || p.main_image || p.image || '')
+}
 onMounted(async () => {
   loading.value = true
   try { const r = await getProductList({ page_num: 1, page_size: 20 }); products.value = r.data?.list || r.data?.items || [] } catch {
@@ -49,7 +66,8 @@ onMounted(async () => {
 .filter-btn.active { background:var(--color-primary); color:white; border-color:var(--color-primary); }
 .product-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:12px; padding:0 16px 16px; }
 .product-card { margin:0; cursor:pointer; padding:0; overflow:hidden; }
-.product-img { height:140px; background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size:56px; }
+.product-img { height:140px; background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size:56px; overflow:hidden; }
+.product-photo { width:100%; height:100%; object-fit:cover; display:block; }
 .product-info { padding:12px; }
 .product-info h3 { font-size:14px; font-weight:600; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .product-desc { font-size:12px; color:var(--text-tertiary); margin-bottom:8px; }
