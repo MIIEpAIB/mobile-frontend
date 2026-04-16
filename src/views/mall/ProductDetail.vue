@@ -1,7 +1,10 @@
 <template>
   <div class="page-container">
     <NavBar title="商品详情" />
-    <div class="detail-img">{{ product.icon || '🪷' }}</div>
+    <div class="detail-img">
+      <img v-if="imageUrl" :src="imageUrl" alt="商品图片" class="detail-photo" />
+      <span v-else>{{ product.icon || '🪷' }}</span>
+    </div>
     <div class="detail-info card">
       <div class="detail-price">{{ (Number(product.price || 0) * 10).toFixed(0) }} 元宝</div>
       <h2 class="detail-name">{{ product.product_name || '加载中...' }}</h2>
@@ -19,18 +22,34 @@
   </div>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import NavBar from '@/components/NavBar.vue'
 import { getProductDetail } from '@/api/modules/mall'
 const route = useRoute()
 const product = ref({})
+const apiBase = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/+$/, '')
+
+const normalizeImageUrl = (raw) => {
+  if (!raw) return ''
+  if (/^https?:\/\//i.test(raw)) return raw
+  if (raw.startsWith('/')) return `${apiBase}${raw}`
+  return `${apiBase}/${raw}`
+}
+
+const imageUrl = computed(() => {
+  const p = product.value || {}
+  // 优先后端标准字段，其次兼容之前的 icon 字段
+  return normalizeImageUrl(p.product_image || p.main_image || p.image || p.icon || '')
+})
+
 onMounted(async () => {
   try { const r = await getProductDetail({ product_id: route.query.product_id }); product.value = r.data } catch { product.value = { product_name: '开光黑曜石貔貅手串', price: 299, icon: '📿', description: '天然黑曜石配貔貅造型，大师开光加持', sales: 1280 } }
 })
 </script>
 <style scoped>
 .detail-img { height:280px; background:var(--bg-secondary); display:flex; align-items:center; justify-content:center; font-size:96px; }
+.detail-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
 .detail-info { margin:12px 16px; }
 .detail-price { font-size:28px; font-weight:900; color:var(--color-primary); margin-bottom:8px; }
 .detail-name { font-size:18px; font-weight:700; margin-bottom:8px; }
