@@ -36,6 +36,9 @@ export const getDivinationPurposes = () => request.get('/divination/purpose/list
 // 测字计算
 export const characterCalculate = (data) => request.post('/divination/character/calculate', data)
 
+// 测字详批解锁（¥9.9；开发环境 mock_pay=true）
+export const unlockCharacterDetail = (data) => request.post('/divination/character/unlock', data)
+
 // 测字历史
 export const getDivinationHistory = (params) => request.get('/divination/history/list', { params })
 
