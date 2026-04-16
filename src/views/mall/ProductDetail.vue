@@ -39,8 +39,9 @@ const normalizeImageUrl = (raw) => {
 
 const imageUrl = computed(() => {
   const p = product.value || {}
+  const firstFromList = Array.isArray(p.product_images) ? p.product_images.find((it) => !!it) : ''
   // 优先后端标准字段，其次兼容之前的 icon 字段
-  return normalizeImageUrl(p.product_image || p.main_image || p.image || p.icon || '')
+  return normalizeImageUrl(firstFromList || p.product_image || p.main_image || p.image || p.icon || '')
 })
 
 onMounted(async () => {
