@@ -32,7 +32,14 @@
         <div class="result-header">
           <span class="result-badge">取名解读</span>
         </div>
-        <div class="result-body" v-html="formattedResult"></div>
+        <div class="result-body">
+          <h4 class="section-title">总览（含三才五格、梅花易数分析）</h4>
+          <p class="section-text">{{ overviewText }}</p>
+          <h4 class="section-title">推荐名字</h4>
+          <p class="section-text">{{ namesText }}</p>
+          <p class="section-text">详细咨询请联系专家</p>
+          <button class="contact-btn" @click="$router.push('/expert')">联系专家</button>
+        </div>
       </div>
 
       <button class="redraw-btn" @click="result = null">重新测算</button>
@@ -52,57 +59,17 @@ const form = ref({
   surname: '',
 })
 
-// 格式化结果
-const formattedResult = computed(() => {
+const overviewText = computed(() => {
   if (!result.value) return ''
   const d = result.value
+  const txt = d.analysis || d.interpretation || d.content || ''
+  return txt.replace(/\n/g, ' ').slice(0, 160) + '...'
+})
 
-  // 如果后端返回结构化数据
-  if (d.analysis || d.interpretation) {
-    const text = d.analysis || d.interpretation || ''
-    let html = ''
-    const paragraphs = text.split(/\n+/).filter(p => p.trim())
-    paragraphs.forEach(p => {
-      const trimmed = p.trim()
-      if (/^[一二三四五六七八九十]+[、．.]/.test(trimmed)) {
-        html += `<h4 class="section-title">${trimmed}</h4>`
-      } else {
-        html += `<p class="section-text">${trimmed}</p>`
-      }
-    })
-
-    // 推荐名字列表
-    if (d.names && Array.isArray(d.names) && d.names.length) {
-      html += '<div class="names-section"><h4 class="section-title">推荐名字</h4>'
-      d.names.forEach(n => {
-        const name = typeof n === 'string' ? n : n.name
-        const meaning = typeof n === 'object' ? (n.meaning || '') : ''
-        html += `<div class="name-item"><span class="name-value">${form.value.surname}${name}</span>`
-        if (meaning) html += `<span class="name-meaning">${meaning}</span>`
-        html += '</div>'
-      })
-      html += '</div>'
-    }
-
-    if (d.recommended_names && Array.isArray(d.recommended_names) && d.recommended_names.length) {
-      html += '<div class="names-section"><h4 class="section-title">推荐名字</h4>'
-      d.recommended_names.forEach(n => {
-        html += `<div class="name-item"><span class="name-value">${n.name}</span>`
-        if (n.meaning) html += `<span class="name-meaning">${n.meaning}</span>`
-        html += '</div>'
-      })
-      html += '</div>'
-    }
-
-    return html
-  }
-
-  // 纯文本
-  if (d.content || d.text) {
-    return `<p class="section-text">${(d.content || d.text).replace(/\n/g, '<br/>')}</p>`
-  }
-
-  return `<p class="section-text">${JSON.stringify(d)}</p>`
+const namesText = computed(() => {
+  const d = result.value || {}
+  const names = (d.names || d.recommended_names || []).map((n) => typeof n === 'string' ? `${form.value.surname}${n}` : (n.name || '')).filter(Boolean)
+  return names.length ? names.slice(0, 5).join('、') : '暂未生成推荐名字'
 })
 
 const submit = async () => {
@@ -291,6 +258,7 @@ const submit = async () => {
 }
 
 .result-body { padding: 20px; }
+.contact-btn { margin-top: 10px; width: 100%; height: 40px; border-radius: 8px; background: #c9a96e; color: #1a1a2e; font-weight: 700; cursor: pointer; }
 
 .result-body :deep(.section-title) {
   font-family: 'STKaiti', 'KaiTi', serif;

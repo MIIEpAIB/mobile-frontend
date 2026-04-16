@@ -39,7 +39,7 @@
           </div>
           <div class="locked-overlay">
             <p class="pay-tip">完整解读含：卦象详解、爻辞、吉凶方位、行动建议</p>
-            <p class="pay-price">¥{{ Number(result.unlock_price_cny || 9.9).toFixed(1) }}</p>
+            <p class="pay-price">{{ Math.round(Number(result.unlock_price_cny || 9.9) * 10) }}元宝</p>
             <button type="button" class="btn-unlock" :disabled="unlocking" @click="payUnlock">
               {{ unlocking ? '处理中...' : '支付解锁' }}
             </button>

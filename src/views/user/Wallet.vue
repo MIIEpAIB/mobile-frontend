@@ -1,7 +1,7 @@
 <template>
   <div class="page-container"><NavBar title="我的钱包" />
     <div class="wallet-card">
-      <p class="wallet-label">账户余额（元）</p>
+      <p class="wallet-label">账户余额（元宝）</p>
       <h2 class="wallet-amount">{{ balance }}</h2>
       <button class="btn-recharge" @click="showRecharge=true">充值</button>
     </div>
@@ -18,8 +18,9 @@
       <div class="modal-content card fade-in-up">
         <h3>充值</h3>
         <div class="amount-grid">
-          <button v-for="a in [50,100,200,500,1000,2000]" :key="a" class="amount-btn" :class="{active:rechargeAmount===a}" @click="rechargeAmount=a">¥{{ a }}</button>
+          <button v-for="a in [50,100,200,500,1000,2000]" :key="a" class="amount-btn" :class="{active:rechargeAmount===a}" @click="rechargeAmount=a">¥{{ a }} = {{ a * 10 }}元宝</button>
         </div>
+        <p class="rate-tip">充值比例：1 RMB = 10 元宝</p>
         <button class="btn-primary" @click="doRecharge" style="margin-top:16px">确认充值</button>
       </div>
     </div>
@@ -30,13 +31,18 @@ import { ref, onMounted } from 'vue'
 import NavBar from '@/components/NavBar.vue'
 import { getWalletTransactions } from '@/api/modules/user'
 const balance = ref('0.00'), transactions = ref([]), showRecharge = ref(false), rechargeAmount = ref(100)
+const toYuanbao = (amount) => Number(amount || 0) * 10
 onMounted(async () => {
-  try { const r = await getWalletTransactions({page_num:1,page_size:20}); transactions.value = r.data?.list||[]; balance.value = r.data?.balance||'0.00' } catch {
-    balance.value = '688.00'
+  try {
+    const r = await getWalletTransactions({page_num:1,page_size:20})
+    transactions.value = (r.data?.list || []).map((item) => ({ ...item, amount: toYuanbao(item.amount) }))
+    balance.value = toYuanbao(r.data?.balance || '0.00')
+  } catch {
+    balance.value = '6880'
     transactions.value = [{id:1,type_name:'充值',amount:500,created_at:'2026-03-13'},{id:2,type_name:'购买商品',amount:-299,created_at:'2026-03-12'},{id:3,type_name:'祈福消费',amount:-10,created_at:'2026-03-11'}]
   }
 })
-const doRecharge = () => { showRecharge.value=false; alert(`充值 ¥${rechargeAmount.value} 成功`) }
+const doRecharge = () => { showRecharge.value=false; alert(`充值 ¥${rechargeAmount.value} 成功，到账 ${rechargeAmount.value * 10} 元宝`) }
 </script>
 <style scoped>
 .wallet-card { background:linear-gradient(135deg,var(--color-primary-dark),var(--color-primary)); margin:16px; border-radius:var(--radius-lg); padding:28px 24px; color:var(--text-inverse); text-align:center; box-shadow:var(--shadow-lg); }
@@ -55,6 +61,7 @@ const doRecharge = () => { showRecharge.value=false; alert(`充值 ¥${rechargeA
 .modal-content { width:100%; max-width:400px; padding:24px; }
 .modal-content h3 { font-family:var(--font-serif); font-size:18px; text-align:center; color:var(--color-primary); margin-bottom:16px; }
 .amount-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
-.amount-btn { height:44px; border-radius:var(--radius-md); border:1.5px solid var(--border-default); font-size:15px; font-weight:600; cursor:pointer; background:var(--bg-card); color:var(--text-primary); }
+.amount-btn { min-height:44px; border-radius:var(--radius-md); border:1.5px solid var(--border-default); font-size:12px; font-weight:600; cursor:pointer; background:var(--bg-card); color:var(--text-primary); padding:4px; }
 .amount-btn.active { background:var(--color-primary); color:white; border-color:var(--color-primary); }
+.rate-tip { margin-top: 10px; font-size: 12px; color: var(--text-secondary); text-align: center; }
 </style>

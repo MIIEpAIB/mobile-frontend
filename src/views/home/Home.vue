@@ -12,15 +12,23 @@
       <p class="header-slogan">智运乾坤 · 易道通达</p>
     </header>
 
-    <!-- Banner 轮播 -->
+    <!-- 五行与每日建议 -->
     <div class="banner-wrapper">
       <div class="banner-card">
         <div class="banner-content">
-          <h2>AI 玄学测算</h2>
-          <p>八字命理 · 风水分析 · 抽签解梦</p>
-          <router-link to="/ai" class="banner-btn">立即体验 →</router-link>
+          <h2>五行运势面板</h2>
+          <p>金木水火土评分 · 穿衣/出行/饮食建议</p>
+          <router-link to="/ai/bazi" class="banner-btn">查看完整运势 →</router-link>
         </div>
-        <div class="banner-icon">🔮</div>
+        <div class="banner-icon">☯</div>
+      </div>
+    </div>
+
+    <div class="section-title">五行打分</div>
+    <div class="element-grid">
+      <div class="element-item card" v-for="item in elementScores" :key="item.name">
+        <div class="element-name">{{ item.name }}</div>
+        <div class="element-score">{{ item.score }}</div>
       </div>
     </div>
 
@@ -51,10 +59,12 @@
     <div class="fortune-card card">
       <div class="fortune-header">
         <span class="fortune-date">{{ todayStr }}</span>
-        <span class="tag tag-gold">宜：求财 · 动土</span>
+        <span class="tag tag-gold">宜：求财 · 会友</span>
       </div>
-      <p class="fortune-text">今日五行属火，宜积极进取，利于事业发展。东南方位财气旺盛，可适当安排商务活动。</p>
-      <router-link to="/ai/bazi" class="fortune-link">查看详细运势 →</router-link>
+      <p class="fortune-text">今日整体运势稳中有升，宜主动表达与沟通。注意节奏，避免情绪化决策。</p>
+      <p class="fortune-tips">穿衣配色：{{ dailyTips.color }}</p>
+      <p class="fortune-tips">出行建议：{{ dailyTips.travel }}</p>
+      <p class="fortune-tips">饮食建议：{{ dailyTips.diet }}</p>
     </div>
   </div>
 </template>
@@ -66,6 +76,20 @@ const todayStr = computed(() => {
   const d = new Date()
   return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`
 })
+
+const elementScores = [
+  { name: '金', score: 76 },
+  { name: '木', score: 68 },
+  { name: '水', score: 81 },
+  { name: '火', score: 74 },
+  { name: '土', score: 70 },
+]
+
+const dailyTips = {
+  color: '米白 + 墨绿，更利沟通和稳定气场',
+  travel: '优先东南方向，避免临时改线',
+  diet: '少辛辣，多温补汤食和谷物',
+}
 
 const menuItems = [
   { path: '/ai/lottery', icon: '🎋', label: '抽签' },
@@ -194,6 +218,10 @@ const hotItems = [
 }
 
 .banner-icon { font-size: 56px; opacity: 0.9; }
+.element-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 0 16px 10px; }
+.element-item { text-align: center; padding: 10px 4px; }
+.element-name { font-size: 12px; color: var(--text-secondary); }
+.element-score { font-size: 18px; font-weight: 700; color: var(--color-primary); }
 
 /* Grid Menu */
 .grid-menu {
@@ -274,5 +302,5 @@ const hotItems = [
 .fortune-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .fortune-date { font-family: var(--font-serif); font-size: 14px; font-weight: 600; color: var(--color-primary); }
 .fortune-text { font-size: 14px; color: var(--text-secondary); line-height: 1.8; margin-bottom: 12px; }
-.fortune-link { font-size: 13px; color: var(--color-primary); font-weight: 500; }
+.fortune-tips { font-size: 13px; color: var(--text-secondary); margin-top: 6px; }
 </style>

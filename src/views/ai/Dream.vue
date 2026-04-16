@@ -45,7 +45,19 @@
         <div class="result-header">
           <span class="result-badge">梦境解读</span>
         </div>
-        <div class="result-body" v-html="formattedResult"></div>
+        <div class="result-body">
+          <h4 class="section-title">总览（含周易解释）</h4>
+          <p class="section-text">{{ overviewText }}</p>
+          <div v-if="!unlocked" class="suggestion-block">
+            <h4 class="section-title suggestion-title">详细细节和推荐建议</h4>
+            <p class="section-text">需支付 9.9 元后查看</p>
+            <button class="unlock-btn" @click="unlock">支付9.9元查看</button>
+          </div>
+          <div v-else class="suggestion-block">
+            <h4 class="section-title suggestion-title">详细细节和推荐建议</h4>
+            <p class="section-text">{{ detailText }}</p>
+          </div>
+        </div>
       </div>
 
       <button class="redraw-btn" @click="result = null">重新解梦</button>
@@ -60,57 +72,18 @@ import { aiDream } from '@/api/modules/ai'
 
 const loading = ref(false)
 const result = ref(null)
+const unlocked = ref(false)
 
 const form = ref({
   dream_keyword: '',
   dream_content: '',
 })
 
-// 格式化结果
-const formattedResult = computed(() => {
-  if (!result.value) return ''
-  const d = result.value
-
-  // 如果后端返回结构化数据
-  if (d.interpretation || d.analysis) {
-    let html = ''
-    const text = d.interpretation || d.analysis || ''
-
-    // 尝试按段落分离
-    if (d.dream_symbol) {
-      html += `<div class="section-block"><p class="section-text">${d.dream_symbol}</p></div>`
-    }
-
-    if (text) {
-      // 将换行符转换为段落
-      const paragraphs = text.split(/\n+/).filter(p => p.trim())
-      paragraphs.forEach(p => {
-        const trimmed = p.trim()
-        // 检测是否为标题行（以"一、"、"二、"等开头，或者粗体标记）
-        if (/^[一二三四五六七八九十]+[、．.]/.test(trimmed)) {
-          html += `<h4 class="section-title">${trimmed}</h4>`
-        } else if (trimmed.startsWith('给您的建议') || trimmed.startsWith('建议')) {
-          html += `<h4 class="section-title suggestion-title">${trimmed}</h4>`
-        } else {
-          html += `<p class="section-text">${trimmed}</p>`
-        }
-      })
-    }
-
-    if (d.suggestion && !text.includes(d.suggestion)) {
-      html += `<div class="section-block suggestion-block"><h4 class="section-title suggestion-title">💡 建议</h4><p class="section-text">${d.suggestion}</p></div>`
-    }
-
-    return html
-  }
-
-  // 纯文本
-  if (d.content || d.text) {
-    return `<p class="section-text">${(d.content || d.text).replace(/\n/g, '<br/>')}</p>`
-  }
-
-  return `<p class="section-text">${JSON.stringify(d)}</p>`
+const overviewText = computed(() => {
+  const txt = result.value?.interpretation || result.value?.analysis || ''
+  return txt.replace(/\n/g, ' ').slice(0, 120) + '...'
 })
+const detailText = computed(() => result.value?.interpretation || result.value?.analysis || '')
 
 const submit = async () => {
   if (!form.value.dream_keyword && !form.value.dream_content) {
@@ -118,6 +91,7 @@ const submit = async () => {
   }
 
   loading.value = true
+  unlocked.value = false
   try {
     const r = await aiDream({
       dream_content: form.value.dream_content,
@@ -154,6 +128,10 @@ const submit = async () => {
   } finally {
     loading.value = false
   }
+}
+const unlock = () => {
+  unlocked.value = true
+  alert('支付成功，已解锁详细内容')
 }
 </script>
 
@@ -332,6 +310,7 @@ const submit = async () => {
 .result-body {
   padding: 20px;
 }
+.unlock-btn { margin-top: 8px; width: 100%; height: 38px; border-radius: 8px; background: #c9a96e; color: #1a1a2e; font-weight: 700; }
 
 .result-body :deep(.section-title) {
   font-family: 'STKaiti', 'KaiTi', serif;

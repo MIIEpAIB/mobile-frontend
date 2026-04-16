@@ -88,8 +88,16 @@
           </div>
           <div class="result-divider"></div>
           <div class="result-block">
-            <h3 class="result-label">解签</h3>
-            <p class="result-text">{{ result.interpretation || '此签大吉，诸事顺遂' }}</p>
+            <h3 class="result-label">总览（含周易解释）</h3>
+            <p class="result-text">{{ (result.interpretation || '此签大吉，诸事顺遂').slice(0, 56) }}...</p>
+            <div class="pay-box" v-if="!unlocked">
+              <p>详细细节和推荐建议需支付 9.9 元解锁</p>
+              <button class="pay-btn" @click="unlock">支付9.9元查看</button>
+            </div>
+            <div v-else>
+              <h3 class="result-label">详细解读</h3>
+              <p class="result-text">{{ result.interpretation || '此签大吉，诸事顺遂' }}</p>
+            </div>
           </div>
         </div>
         <button class="redraw-btn" @click="result = null">重新抽签</button>
@@ -106,6 +114,7 @@ import { getLotteryPurposes, lotteryDraw } from '@/api/modules/common'
 const loading = ref(false)
 const isShaking = ref(false)
 const result = ref(null)
+const unlocked = ref(false)
 
 const purposes = ref([
   { code: 'fortune', name: '问财运' },
@@ -153,6 +162,7 @@ onMounted(async () => {
 })
 
 const drawLottery = async () => {
+  unlocked.value = false
   loading.value = true
   isShaking.value = true
 
@@ -182,6 +192,10 @@ const drawLottery = async () => {
     loading.value = false
     isShaking.value = false
   }
+}
+const unlock = () => {
+  unlocked.value = true
+  alert('支付成功，已解锁详细内容')
 }
 </script>
 
@@ -464,6 +478,8 @@ const drawLottery = async () => {
   background: linear-gradient(90deg, transparent, rgba(201, 169, 110, 0.3), transparent);
   margin: 16px 0;
 }
+.pay-box { margin-top: 12px; padding: 10px; border: 1px dashed rgba(201,169,110,0.45); border-radius: 8px; }
+.pay-btn { margin-top: 8px; width: 100%; height: 38px; border-radius: 8px; background: #c9a96e; color: #1a1a2e; font-weight: 700; }
 
 .redraw-btn {
   display: block;

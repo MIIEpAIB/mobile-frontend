@@ -4,13 +4,13 @@
       <div class="cart-item card" v-for="item in items" :key="item.cart_id">
         <input type="checkbox" v-model="item.selected" class="cart-check" />
         <div class="cart-icon">{{ item.icon || '📿' }}</div>
-        <div class="cart-info"><h4>{{ item.product_name }}</h4><span class="cart-price">¥{{ item.price }}</span></div>
+        <div class="cart-info"><h4>{{ item.product_name }}</h4><span class="cart-price">{{ Number(item.price) * 10 }}元宝</span></div>
         <div class="cart-qty"><button @click="item.quantity>1&&item.quantity--">-</button><span>{{ item.quantity }}</span><button @click="item.quantity++">+</button></div>
       </div>
     </div>
     <div class="empty-state" v-else><span class="empty-icon">🛒</span><span class="empty-text">购物车空空如也</span></div>
     <div class="cart-footer" v-if="items.length">
-      <div class="cart-total">合计：<span class="total-price">¥{{ totalPrice }}</span></div>
+      <div class="cart-total">合计：<span class="total-price">{{ totalPrice * 10 }}元宝</span></div>
       <button class="btn-primary" style="width:auto;padding:0 32px" @click="checkout">去结算({{ selectedCount }})</button>
     </div>
   </div>

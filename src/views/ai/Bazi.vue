@@ -117,7 +117,12 @@
     <div class="result-section fade-in-up" v-else>
       <!-- 结果卡片 -->
       <div class="result-card">
-        <div class="result-content" v-html="formattedResult"></div>
+        <div class="result-content">
+          <h4 class="simple-title">总览（含三才五格、梅花易数分析）</h4>
+          <p class="simple-text">{{ overviewText }}</p>
+          <div class="locked-tip">详细咨询请联系专家</div>
+          <button class="contact-btn" @click="$router.push('/expert')">联系专家</button>
+        </div>
       </div>
 
       <!-- 重新测算按钮 -->
@@ -156,53 +161,11 @@ const provinceList = ref([
   '宁夏', '新疆', '香港', '澳门'
 ])
 
-// 格式化结果，支持后端返回的结构化数据 或 纯文本
-const formattedResult = computed(() => {
+const overviewText = computed(() => {
   if (!result.value) return ''
   const d = result.value
-
-  // 如果后端返回了结构化数据
-  if (d.bazi_info || d.life_analysis) {
-    let html = '<div class="result-block">'
-    html += '<p class="result-intro">根据您提供的生辰信息，排盘测算如下：</p>'
-
-    if (d.bazi_info) {
-      const labelMap = { year_pillar: '年柱', month_pillar: '月柱', day_pillar: '日柱', time_pillar: '时柱' }
-      html += '<div class="bazi-pillars">'
-      for (const [k, v] of Object.entries(d.bazi_info)) {
-        html += `<div class="pillar"><span class="pillar-label">${labelMap[k] || k}</span><span class="pillar-value">${v}</span></div>`
-      }
-      html += '</div>'
-    }
-
-    if (d.life_analysis) {
-      html += `<div class="analysis-section"><h4>命局分析</h4><p>${d.life_analysis}</p></div>`
-    }
-
-    if (d.fortune_trend) {
-      const trendMap = { career: '事业财运', love: '情感婚姻', wealth: '财运', health: '健康' }
-      html += '<div class="analysis-section"><h4>运势详解</h4>'
-      for (const [k, v] of Object.entries(d.fortune_trend)) {
-        html += `<p><strong>${trendMap[k] || k}：</strong>${v}</p>`
-      }
-      html += '</div>'
-    }
-
-    if (d.reminder || d.tips) {
-      html += `<div class="analysis-section reminder"><h4>重要提醒</h4><p>${d.reminder || d.tips}</p></div>`
-    }
-
-    html += '</div>'
-    return html
-  }
-
-  // 如果返回纯文本
-  if (d.content || d.text) {
-    return `<div class="result-block"><p>${(d.content || d.text).replace(/\n/g, '<br/>')}</p></div>`
-  }
-
-  // 兜底：将整个对象序列化
-  return `<div class="result-block"><p>${JSON.stringify(d)}</p></div>`
+  const txt = d.life_analysis || d.analysis || d.content || d.text || JSON.stringify(d)
+  return `${txt}`.replace(/\n/g, ' ').slice(0, 160) + '...'
 })
 
 const submit = async () => {
@@ -426,6 +389,10 @@ const submit = async () => {
   backdrop-filter: blur(10px);
   padding: 24px 20px;
 }
+.simple-title { font-size: 15px; color: #c9a96e; margin-bottom: 10px; }
+.simple-text { font-size: 14px; color: rgba(245,230,204,0.8); line-height: 1.9; }
+.locked-tip { margin-top: 14px; color: rgba(245,230,204,0.6); font-size: 13px; }
+.contact-btn { margin-top: 10px; width: 100%; height: 40px; border-radius: 8px; background: #c9a96e; color: #1a1a2e; font-weight: 700; cursor: pointer; }
 
 .result-content :deep(.result-block) {
   /* 包裹整个结果内容 */

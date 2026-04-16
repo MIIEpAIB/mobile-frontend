@@ -6,8 +6,8 @@
     <div class="order-list">
       <div class="order-item card" v-for="o in orders" :key="o.order_id">
         <div class="order-header"><span class="order-no">订单号: {{ o.order_no }}</span><span class="order-status">{{ o.status_text }}</span></div>
-        <div class="order-product"><span class="op-icon">{{ o.icon || '📿' }}</span><div class="op-info"><span>{{ o.product_name }}</span><span class="op-price">¥{{ o.total_amount }} × {{ o.quantity }}</span></div></div>
-        <div class="order-footer"><span class="order-total">实付：<strong>¥{{ o.total_amount }}</strong></span></div>
+        <div class="order-product"><span class="op-icon">{{ o.icon || '📿' }}</span><div class="op-info"><span>{{ o.product_name }}</span><span class="op-price">{{ Number(o.total_amount) * 10 }}元宝 × {{ o.quantity }}</span></div></div>
+        <div class="order-footer"><span class="order-total">实付：<strong>{{ Number(o.total_amount) * 10 }}元宝</strong></span></div>
       </div>
     </div>
     <div class="empty-state" v-if="!orders.length"><span class="empty-icon">📋</span><span class="empty-text">暂无订单</span></div>

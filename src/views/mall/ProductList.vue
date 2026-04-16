@@ -11,7 +11,7 @@
           <h3>{{ p.product_name || p.name }}</h3>
           <p class="product-desc">{{ p.description || '开光法器' }}</p>
           <div class="product-bottom">
-            <span class="product-price">¥{{ p.price || 0 }}</span>
+            <span class="product-price">{{ (Number(p.price || 0) * 10).toFixed(0) }}元宝</span>
             <span class="product-sales">已售{{ p.sales || 0 }}</span>
           </div>
         </div>

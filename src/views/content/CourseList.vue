@@ -6,7 +6,7 @@
         <div class="course-info">
           <h3>{{ c.title }}</h3>
           <p>{{ c.teacher || '名师' }} · {{ c.lesson_count || 0 }}课时</p>
-          <div class="course-bottom"><span class="course-price">{{ c.price>0 ? '¥'+c.price : '免费' }}</span><span class="course-students">{{ c.student_count || 0 }}人学习</span></div>
+          <div class="course-bottom"><span class="course-price">{{ c.price>0 ? (Number(c.price)*10 + '元宝') : '免费' }}</span><span class="course-students">{{ c.student_count || 0 }}人学习</span></div>
         </div>
       </div>
     </div>

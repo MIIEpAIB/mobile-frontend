@@ -32,6 +32,22 @@
       </button>
       <p class="to-login">已有账号？<router-link to="/login">去登录</router-link></p>
     </div>
+
+    <div v-if="showBirthModal" class="modal-overlay" @click.self="showBirthModal=false">
+      <div class="modal card">
+        <h3>补充出生信息</h3>
+        <label class="form-label">历法类型</label>
+        <div class="calendar-switch">
+          <button :class="{active: birthForm.calendar_type==='solar'}" @click="birthForm.calendar_type='solar'">公历</button>
+          <button :class="{active: birthForm.calendar_type==='lunar'}" @click="birthForm.calendar_type='lunar'">农历</button>
+        </div>
+        <label class="form-label">出生日期</label>
+        <input class="form-input" type="date" v-model="birthForm.birth_date" />
+        <label class="form-label">出生时间</label>
+        <input class="form-input" type="time" v-model="birthForm.birth_time" />
+        <button class="btn-primary" style="margin-top:12px" @click="saveBirthInfo">保存并继续</button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,7 +60,9 @@ const router = useRouter()
 const loading = ref(false)
 const cooldown = ref(0)
 const agreed = ref(false)
+const showBirthModal = ref(false)
 const form = ref({ mobile: '', captcha: '', password: '', confirm_password: '' })
+const birthForm = ref({ calendar_type: 'solar', birth_date: '', birth_time: '08:00' })
 
 const sendCode = () => {
   if (!form.value.mobile) return alert('请输入手机号')
@@ -56,7 +74,19 @@ const handleRegister = async () => {
   if (!agreed.value) return alert('请先同意用户协议')
   if (form.value.password !== form.value.confirm_password) return alert('两次密码不一致')
   loading.value = true
-  setTimeout(() => { loading.value = false; alert('注册成功'); router.push('/login') }, 1500)
+  setTimeout(() => { loading.value = false; showBirthModal.value = true }, 800)
+}
+
+const saveBirthInfo = () => {
+  if (!birthForm.value.birth_date || !birthForm.value.birth_time) return alert('请填写完整出生日期和时间')
+  const profile = {
+    ...birthForm.value,
+    birth_text: `${birthForm.value.calendar_type === 'lunar' ? '农历' : '公历'}${birthForm.value.birth_date} ${birthForm.value.birth_time}`,
+  }
+  localStorage.setItem('kp_birth_profile', JSON.stringify(profile))
+  alert('注册成功')
+  showBirthModal.value = false
+  router.push('/login')
 }
 </script>
 
@@ -70,4 +100,10 @@ const handleRegister = async () => {
 .agree-row input { accent-color: var(--color-primary); }
 .to-login { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
 .to-login a { color: var(--color-primary); font-weight: 600; }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; padding: 16px; }
+.modal { width: 100%; max-width: 420px; padding: 18px; }
+.modal h3 { margin-bottom: 12px; color: var(--color-primary); }
+.calendar-switch { display: flex; gap: 8px; margin-bottom: 10px; }
+.calendar-switch button { flex: 1; height: 38px; border-radius: var(--radius-md); background: var(--bg-secondary); color: var(--text-secondary); cursor: pointer; }
+.calendar-switch button.active { background: var(--color-primary); color: #fff; }
 </style>

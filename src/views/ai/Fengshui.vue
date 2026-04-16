@@ -51,24 +51,13 @@
           <span class="result-tag-badge">{{ result.query_tag || '风水分析' }}</span>
         </div>
         <div class="result-body">
-          <!-- 整体分析 -->
-          <div class="analysis-block" v-if="result.overall_analysis">
-            <h4>整体分析</h4>
-            <p>{{ result.overall_analysis }}</p>
+          <div class="analysis-block">
+            <h4>总览（含三才五格、梅花易数分析）</h4>
+            <p>{{ overviewText }}</p>
           </div>
-
-          <!-- 关键位置 -->
-          <div v-if="result.key_positions && result.key_positions.length" class="positions-list">
-            <div v-for="pos in result.key_positions" :key="pos.position" class="pos-item">
-              <h4>{{ pos.position }}</h4>
-              <p>{{ pos.analysis }}</p>
-              <p class="suggestion" v-if="pos.suggestion">💡 {{ pos.suggestion }}</p>
-            </div>
-          </div>
-
-          <!-- 纯文本 -->
-          <div class="analysis-block" v-if="result.analysis && !result.overall_analysis">
-            <p>{{ result.analysis }}</p>
+          <div class="analysis-block">
+            <p class="suggestion">详细咨询请联系专家</p>
+            <button class="contact-btn" @click="$router.push('/expert')">联系专家</button>
           </div>
         </div>
       </div>
@@ -122,6 +111,11 @@ const tagData = {
 }
 
 const currentTags = computed(() => tagData[activeCat.value] || [])
+const overviewText = computed(() => {
+  if (!result.value) return ''
+  const txt = result.value.overall_analysis || result.value.analysis || ''
+  return txt.slice(0, 160) + (txt.length > 160 ? '...' : '')
+})
 
 const selectTag = (tag) => {
   selectedTag.value = tag
@@ -365,6 +359,7 @@ const doQuery = async () => {
   line-height: 2;
   margin: 0;
 }
+.contact-btn { margin-top: 10px; width: 100%; height: 40px; border-radius: 8px; background: #c9a96e; color: #1a1a2e; font-weight: 700; cursor: pointer; }
 
 .positions-list {
   margin-top: 16px;

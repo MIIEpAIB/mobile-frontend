@@ -6,6 +6,9 @@
         <div class="expert-info">
           <h3>{{ e.name }} <span class="tag tag-gold">{{ e.title || '资深专家' }}</span></h3>
           <p>{{ e.speciality }}</p>
+          <p class="honor">荣誉：{{ e.honor || e.title || '资深命理专家' }}</p>
+          <p class="contact">微信：{{ e.wechat || e.contact_wechat || 'expert_kunpeng' }}</p>
+          <p class="contact">电话：{{ e.phone || e.contact_phone || '400-800-8888' }}</p>
           <div class="expert-stats"><span>⭐ {{ e.rating || 4.8 }}</span><span>{{ e.order_count || 0 }}次服务</span></div>
         </div>
         <button class="btn-book" @click="book(e)">预约</button>
@@ -35,7 +38,9 @@ const book = (e) => alert(`已预约 ${e.name} 的服务，稍后将有专人联
 .expert-card { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
 .expert-avatar { font-size:40px; width:56px; height:56px; background:var(--color-primary-soft); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 .expert-info { flex:1; } .expert-info h3 { font-size:15px; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.expert-info p { font-size:13px; color:var(--text-secondary); margin-bottom:6px; }
+.expert-info p { font-size:13px; color:var(--text-secondary); margin-bottom:4px; }
 .expert-stats { display:flex; gap:16px; font-size:12px; color:var(--text-tertiary); }
+.honor { color: var(--color-primary); }
+.contact { font-size: 12px; }
 .btn-book { padding:8px 20px; background:var(--color-primary); color:white; border-radius:var(--radius-full); font-size:13px; font-weight:600; cursor:pointer; white-space:nowrap; }
 </style>

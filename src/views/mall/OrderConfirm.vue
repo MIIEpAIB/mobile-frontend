@@ -1,8 +1,8 @@
 <template>
   <div class="page-container"><NavBar title="确认订单" />
     <div class="section card"><h3 class="sec-title">📍 收货地址</h3><p class="addr-text">{{ address || '请添加收货地址' }}</p></div>
-    <div class="section card"><h3 class="sec-title">商品信息</h3><div class="order-item" v-for="i in orderItems" :key="i.product_id"><span class="oi-icon">{{ i.icon||'📿' }}</span><div class="oi-info"><span>{{ i.product_name }}</span><span class="oi-price">¥{{ i.price }} × {{ i.quantity }}</span></div></div></div>
-    <div class="section card total-section"><div class="total-row"><span>商品合计</span><span>¥{{ total }}</span></div><div class="total-row big"><span>实付金额</span><span class="pay-amount">¥{{ total }}</span></div></div>
+    <div class="section card"><h3 class="sec-title">商品信息</h3><div class="order-item" v-for="i in orderItems" :key="i.product_id"><span class="oi-icon">{{ i.icon||'📿' }}</span><div class="oi-info"><span>{{ i.product_name }}</span><span class="oi-price">{{ i.price * 10 }}元宝 × {{ i.quantity }}</span></div></div></div>
+    <div class="section card total-section"><div class="total-row"><span>商品合计</span><span>{{ total * 10 }}元宝</span></div><div class="total-row big"><span>实付金额</span><span class="pay-amount">{{ total * 10 }}元宝</span></div></div>
     <div class="submit-bar"><button class="btn-primary" @click="submitOrder">提交订单</button></div>
   </div>
 </template>
