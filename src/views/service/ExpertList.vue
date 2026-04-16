@@ -2,7 +2,10 @@
   <div class="page-container"><NavBar title="专家服务" />
     <div class="expert-list">
       <div class="expert-card card" v-for="e in experts" :key="e.expert_id">
-        <div class="expert-avatar">{{ e.icon || '🧙' }}</div>
+        <div class="expert-avatar">
+          <img v-if="e.avatar" :src="e.avatar" class="expert-avatar-img" />
+          <span v-else>{{ e.icon || '🧙' }}</span>
+        </div>
         <div class="expert-info">
           <h3>{{ e.name }} <span class="tag tag-gold">{{ e.title || '资深专家' }}</span></h3>
           <p>{{ e.speciality }}</p>
@@ -36,7 +39,8 @@ const book = (e) => alert(`已预约 ${e.name} 的服务，稍后将有专人联
 <style scoped>
 .expert-list { padding:12px 16px; }
 .expert-card { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
-.expert-avatar { font-size:40px; width:56px; height:56px; background:var(--color-primary-soft); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.expert-avatar { font-size:40px; width:56px; height:56px; background:var(--color-primary-soft); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; overflow:hidden; }
+.expert-avatar-img { width:56px; height:56px; object-fit:cover; }
 .expert-info { flex:1; } .expert-info h3 { font-size:15px; display:flex; align-items:center; gap:6px; margin-bottom:4px; }
 .expert-info p { font-size:13px; color:var(--text-secondary); margin-bottom:4px; }
 .expert-stats { display:flex; gap:16px; font-size:12px; color:var(--text-tertiary); }
